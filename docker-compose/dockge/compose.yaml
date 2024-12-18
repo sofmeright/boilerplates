@@ -9,7 +9,7 @@ services:
       - /your-stacks-path:/your-stacks-path  # <-- Change this to your stacks path
     environment:
       - DOCKGE_STACKS_DIR=/your-stacks-path  # <-- Change this to your stacks path
-    # --> (Optional) When using traefik
+    # --> (Optional) When using traefik...
     # labels:
     #   - traefik.enable=true
     #   - traefik.http.routers.dockge-http.entrypoints=web
@@ -22,9 +22,11 @@ services:
     #   - frontend
     # <--
     restart: unless-stopped
+
 volumes:
   dockge-data:
-# --> (Optional) When using traefik
+
+# --> (Optional) When using traefik...
 # networks:
 #   frontend:
 #     external: true

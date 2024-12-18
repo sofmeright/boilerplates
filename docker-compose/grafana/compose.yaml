@@ -1,13 +1,52 @@
 ---
-volumes:
-  grafana-data:
-    driver: local
 services:
   grafana:
     image: docker.io/grafana/grafana-oss:11.4.0
     container_name: grafana
-    ports:
-      - "3000:3000"
+    environment:
+      - GF_SERVER_ROOT_URL=https://your-fqdn  # <-- Replace with your FQDN
+      # --> (Optional) When using authentik...
+      # - GF_AUTH_GENERIC_OAUTH_ENABLED=true
+      # - GF_AUTH_GENERIC_OAUTH_NAME=authentik
+      # - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
+      # - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
+      # - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email
+      # - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://your-authentik-fqdn/application/o/authorize/  # <-- Replace with your Authentik FQDN
+      # - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://your-authentik-fqdn/application/o/token/  # <-- Replace with your Authentik FQDN
+      # - GF_AUTH_GENERIC_OAUTH_API_URL=https://your-authentik-fqdn/application/o/userinfo/  # <-- Replace with your Authentik FQDN
+      # - GF_AUTH_SIGNOUT_REDIRECT_URL=https://your-authentik-fqdn/application/o/your-grafana-slug/end-session/  # <-- Replace with your Grafana slug
+      # - GF_AUTH_OAUTH_AUTO_LOGIN=true  # <-- (Optional) enable auto-login (bypasses Grafana login screen)
+      # - GF_AUTH_OAUTH_ALLOW_INSECURE_EMAIL_LOOKUP=true
+      # - GF_AUTH_GENERIC_OAUTH_SKIP_ORG_ROLE_SYNC=true
+      # <--
+    # --> (Optional) When using traefik...
+    # networks:
+    #   - frontend
+    # <--
     volumes:
       - grafana-data:/var/lib/grafana
+    # --> (Optional) Remove when using traefik...
+    ports:
+      - "3000:3000"
+    # <--
+    # --> (Optional) When using traefik...
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.services.gitea.loadbalancer.server.port=3000
+    #   - traefik.http.services.gitea.loadbalancer.server.scheme=http
+    #   - traefik.http.routers.gitea-https.entrypoints=websecure
+    #   - traefik.http.routers.gitea-https.rule=Host(`your-fqdn`)  # <-- Replace with your FQDN
+    #   - traefik.http.routers.gitea-https.tls=true
+    #   - traefik.http.routers.gitea-https.tls.certresolver=your-certresolver  # <-- Replace with your certresolver
+    # <--
     restart: unless-stopped
+
+volumes:
+  grafana-data:
+    driver: local
+
+# --> (Optional) When using traefik...
+# networks:
+#   frontend:
+#     external: true
+# <--
